@@ -1335,7 +1335,9 @@ version = "0.2.0"
 
 [[deps.Utils]]
 deps = ["ADerrors", "BDIO", "Debugger", "FastGaussQuadrature", "LaTeXStrings", "LeastSquaresOptim", "OhMyREPL", "Optim", "PGFPlotsX", "Plots", "Printf", "PyPlot"]
-path = "/home/david/git/dalbandea/phd/codes/0-DavidUtils/Utils-david"
+git-tree-sha1 = "457ad5ee9520a480d819e5464a7c67994cc1934b"
+repo-rev = "main"
+repo-url = "https://github.com/dalbandea/Utils-david"
 uuid = "9b4f6371-7b53-407c-91a4-11eac51443cc"
 version = "0.1.0"
 
