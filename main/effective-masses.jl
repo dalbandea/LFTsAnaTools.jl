@@ -33,8 +33,8 @@ function compute_mpcac(ppws, apws)
 end
 
 function pion_effective_mass(ppws::CorrelatorAnalysis)
-    mpi = log.(ppws.ydata[1:end-1] ./ ppws.ydata[2:end])
-    return EffectiveMass(ppws.xdata[1:end-1], mpi, f64(ppws.ID), title="Mpi-eff")
+    mpi = @. acosh((ppws.ydata[1:end-2] + ppws.ydata[3:end])/(2*ppws.ydata[2:end-1]))
+    return EffectiveMass(ppws.xdata[2:end-1], mpi, f64(ppws.ID), title="Mpi-eff")
 end
 
 function pion_fit_effective_mass!(ppws::CorrelatorAnalysis)
