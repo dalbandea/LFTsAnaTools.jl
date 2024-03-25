@@ -4,14 +4,14 @@ using ADerrors
 import ADerrors: uwreal
 
 using Plots
-import Plots: plot
 using Utils
 
 include("analysis.jl")
 export AbstractCorrelatorAnalysis, AbstractObservableAnalysis, CorrelatorSymmetry, SymmetricCorrelator, AntisymmetricCorrelator
 export CorrelatorAnalysis
 
+include("effectivemass.jl")
+
 include("plots.jl")
-export plot, plot!  
 
 end # module

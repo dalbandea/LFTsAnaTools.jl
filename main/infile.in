@@ -1,0 +1,7 @@
+["Paths"]
+wdir = "/home/david/git/dalbandea/phd/codes/6-LFTs/LFTsAnaTools.jl/trash/beta4/"
+pppath = "/home/david/git/dalbandea/phd/codes/6-LFTs/LFTsAnaTools.jl/trash/beta4/pppath.in"
+appath = "/home/david/git/dalbandea/phd/codes/6-LFTs/LFTsAnaTools.jl/trash/beta4/appath.in"
+
+["Analysis parameters"]
+burnout = 1
