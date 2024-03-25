@@ -81,7 +81,7 @@ plot_and_save.(fit_mpis)
 
 for i in eachindex(m0)
     htmlpath = joinpath(wdir, "jointeffmass")*"-m$(fit_mpis[i].m0).html"
-    pl = plot(mpis[i], title = "m0=$(m0[i])")
+    pl = plot(mpis[i], title = "m0=$(fit_mpis[i].m0)")
     plot!(pl, fit_mpis[i])
     savefig(pl, htmlpath)
 end
