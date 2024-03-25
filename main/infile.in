@@ -1,7 +1,8 @@
 ["Paths"]
-wdir = "/home/david/git/dalbandea/phd/codes/6-LFTs/LFTsAnaTools.jl/trash/beta4/"
-pppath = "/home/david/git/dalbandea/phd/codes/6-LFTs/LFTsAnaTools.jl/trash/beta4/pppath.in"
-appath = "/home/david/git/dalbandea/phd/codes/6-LFTs/LFTsAnaTools.jl/trash/beta4/appath.in"
+wdir = "/home/david/git/dalbandea/phd/codes/6-LFTs/LFTsAnaTools.jl/trash/beta5/"
+pppath = "/home/david/git/dalbandea/phd/codes/6-LFTs/LFTsAnaTools.jl/infiles.in"
+appath = "/home/david/git/dalbandea/phd/codes/6-LFTs/LFTsAnaTools.jl/infiles_pcac.in"
 
 ["Analysis parameters"]
-burnout = 1
+burnout = 10000
+safetmin = 8

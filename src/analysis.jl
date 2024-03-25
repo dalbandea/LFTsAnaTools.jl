@@ -202,7 +202,7 @@ export fit
 import Utils: nparameters
 nparameters(::StraightLine) = 2
 
-function plot(xdata, ydata::Array{uwreal}, f::UtilsFunc, fitp::Array{uwreal}; kwargs...)
+function Plots.plot(xdata, ydata::Array{uwreal}, f::UtilsFunc, fitp::Array{uwreal}; kwargs...)
     pl = plot_fit(xdata, ydata, f, fitp)
     plot!(pl, xdata, ydata; kwargs...)
 end
