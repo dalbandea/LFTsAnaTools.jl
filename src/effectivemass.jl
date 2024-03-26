@@ -49,7 +49,7 @@ end
 export compute_mpcac
 
 function pion_effective_mass(ppws::CorrelatorAnalysis)
-    mpi = zeros(length(ppws.ydata[1:end-2])-2)
+    mpi = Vector{uwreal}(undef, length(ppws.ydata[1:end-2])-2)
     for i in 1:length(mpi)-2
         try
             mpi[i] = @. acosh((ppws.ydata[i] + ppws.ydata[i+2])/(2*ppws.ydata[i+1]))
