@@ -57,7 +57,7 @@ function pion_effective_mass(ppws::CorrelatorAnalysis)
             mpi[i] = uwreal([0.0, 0.0], "zero")
         end
     end
-    return EffectiveMass(ppws.xdata[2:end-1], mpi, f64(ppws.ID), title="Mpi-eff")
+    return EffectiveMass(ppws.xdata[2:end-1], mpi, ppws.ID, title="Mpi-eff")
 end
 export pion_effective_mass
 
@@ -74,6 +74,6 @@ function pion_fit_effective_mass(ppws::CorrelatorAnalysis)
     pion_fit_effective_mass!(ppws)
     fit_mpis = ppws.histories.fitp[2,1:end-1]
     T = length(fit_mpis)
-    return EffectiveMass(ppws.xdata[1:T], fit_mpis, f64(ppws.ID), title="Mpi-fiteff")
+    return EffectiveMass(ppws.xdata[1:T], fit_mpis, ppws.ID, title="Mpi-fiteff")
 end
 export pion_fit_effective_mass

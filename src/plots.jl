@@ -1,6 +1,14 @@
 
-Plots.plot(xdata, ydata::Array{uwreal}; kwargs...) = Plots.plot(xdata, value.(ydata), yerr=err.(ydata); kwargs...)
+function Plots.plot(xdata, ydata::Array{uwreal}; kwargs...) 
+    if ydata[1].err == zero(eltype(ydata[1].err))
+        uwerr.(ydata)
+    end
+    Plots.plot(xdata, value.(ydata), yerr=err.(ydata); kwargs...)
+end
 function Plots.plot!(pl::Plots.Plot, xdata, ydata::Array{uwreal}; kwargs...) 
+    if ydata[1].err == zero(eltype(ydata[1].err))
+        uwerr.(ydata)
+    end
     Plots.plot!(pl, xdata, value.(ydata); yerr=err.(ydata), kwargs...)
 end
 

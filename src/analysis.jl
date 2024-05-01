@@ -29,16 +29,16 @@ mutable struct CorrelatorAnalysis <: AbstractCorrelatorAnalysis
     histories::CorrelatorFitHistories
     ID::String
     burnout::Int64
-    function CorrelatorAnalysis(filepath::String; type = SymmetricCorrelator, ensemble_ID::String = filepath, burnout::Int64 = 1)
-        history = read(type, filepath)[burnout:end, :]
-        T = length(history[1,:])
-        x = []
-        ydata = uwreal[]
-        tmin = 1
-        tmax = T
-        histories = CorrelatorFitHistories()
-        return new(filepath, type, history, T, x, ydata, tmin, tmax, histories, ensemble_ID, burnout)
-    end
+end
+
+function CorrelatorAnalysis(filepath; type = SymmetricCorrelator, ensemble_ID::String = filepath, burnout::Int64 = 1)
+    history, ncfgs, T = read(type, filepath, burnout = burnout)
+    x = []
+    ydata = uwreal[]
+    tmin = 1
+    tmax = T
+    histories = CorrelatorFitHistories()
+    return CorrelatorAnalysis(filepath, type, history, T, x, ydata, tmin, tmax, histories, ensemble_ID, burnout)
 end
 
 function reset_histories!(corrws::AbstractCorrelatorAnalysis)
@@ -48,7 +48,8 @@ function reset_histories!(corrws::AbstractCorrelatorAnalysis)
 end
 export reset_histories!
 
-function uwreal(corrws::AbstractCorrelatorAnalysis)
+uwreal(corrws::AbstractCorrelatorAnalysis) = uwreal(corrws, corrws.type)
+function uwreal(corrws::AbstractCorrelatorAnalysis, type)
 	# Load correlation data
     corrs = corrws.history
 
@@ -63,7 +64,8 @@ function uwreal(corrws::AbstractCorrelatorAnalysis)
 end
 export uwreal
 
-function uwrealsym(corrws::AbstractCorrelatorAnalysis)
+uwrealsym(corrws::AbstractCorrelatorAnalysis) = uwrealsym(corrws, corrws.type)
+function uwrealsym(corrws::AbstractCorrelatorAnalysis, type)
 	# Load correlation data
     corrs = corrws.history
 
