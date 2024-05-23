@@ -41,7 +41,7 @@ function CorrelatorAnalysis(filepath; type = SymmetricCorrelator, ensemble_ID::S
     tmax = T
     Tmax = 0
     histories = CorrelatorFitHistories()
-    return CorrelatorAnalysis(filepath, type, history, T, x, ydata, tmin, tmax, Tmax, histories, ensemble_ID*"burn$burnout", burnout, nothing)
+    return CorrelatorAnalysis(filepath, type, history, T, x, ydata, tmin, tmax, Tmax, histories, ensemble_ID, burnout, nothing)
 end
 
 function reset_histories!(corrws::AbstractCorrelatorAnalysis)
@@ -77,14 +77,36 @@ function uwrealsym(corrws::AbstractCorrelatorAnalysis, type)
 	corrws.ydata = Vector{uwreal}(undef, T2p1);
 
 	for i in eachindex(corrws.ydata)
-        corrws.ydata[i] = uwreal((corrs[:,i] .+ sign(corrws.type) * corrs[:,1+(corrws.T-i+1)%corrws.T])/2, corrws.ID)
+        if corrws.reweights == nothing
+            corrws.ydata[i] = uwreal((corrs[:,i] .+ sign(corrws.type) * corrs[:,1+(corrws.T-i+1)%corrws.T])/2, corrws.ID)
+        else
+            corrws.ydata[i] = reweight((corrs[:,i] .+ sign(corrws.type) * corrs[:,1+(corrws.T-i+1)%corrws.T])/2, corrws.reweights, corrws.ID)
+        end
 	end
-	corrws.ydata[1] = uwreal(corrs[:, 1], corrws.ID )
-	corrws.ydata[end] = uwreal(corrs[:, T2p1], corrws.ID )
+    if corrws.reweights == nothing
+        corrws.ydata[1] = uwreal(corrs[:, 1], corrws.ID )
+        corrws.ydata[end] = uwreal(corrs[:, T2p1], corrws.ID )
+    else
+        corrws.ydata[1] = reweight(corrs[:, 1], corrws.reweights, corrws.ID)
+        corrws.ydata[end] = reweight(corrs[:, T2p1], corrws.reweights, corrws.ID)
+    end
 
 	return nothing
 end
 export uwrealsym
+
+"""
+Performs reweighting given a markov chain of an observable, `vec` and the
+reweighting weights `W`.
+"""
+function reweight(vec::Vector, W::Vector, ID::String)
+    length(vec) == length(W) || error("Vector and reweighting weights do not have the same length")
+    uwvec = uwreal(vec .* W, ID)
+    uww = uwreal(W, ID)
+    return  uwvec/uww
+end
+export reweight
+
 
 sign(::Type{SymmetricCorrelator}) = one(eltype(Float64))
 sign(::Type{AntisymmetricCorrelator}) = -one(eltype(Float64))

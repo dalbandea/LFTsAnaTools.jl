@@ -82,9 +82,13 @@ end
 export pion_fit_effective_mass!
 
 function pion_fit_effective_mass(ppws::CorrelatorAnalysis)
+    tmin = ppws.tmin
+    tmax = ppws.tmax
+    tmin >= ppws.xdata[1] || error("tmin=$tmin outside of range $(ppws.xdata[1]):$(ppws.xdata[end])")
+    tmax <= ppws.xdata[end] || error("tmax=$tmax outside of range $(ppws.xdata[1]):$(ppws.xdata[end])")
     pion_fit_effective_mass!(ppws)
-    fit_mpis = ppws.histories.fitp[2,1:end-1]
-    T = length(fit_mpis)
-    return EffectiveMass(ppws.xdata[1:T], fit_mpis, ppws.ID, title="Mpi-fiteff")
+    fit_mpis = ppws.histories.fitp[2,:]
+    length(fit_mpis) == length(tmin:tmax) || error("Some fits failed")
+    return EffectiveMass(ppws.xdata[tmin+1:tmax+1], fit_mpis, ppws.ID, title="Mpi-fiteff")
 end
 export pion_fit_effective_mass
