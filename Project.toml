@@ -6,15 +6,11 @@ version = "0.1.0"
 [deps]
 ADerrors = "5e92007d-7bf1-471c-8ceb-4591b8b567a9"
 BDIO = "375f315e-f2c4-11e9-2ef9-134f02f79e27"
+DelimitedFiles = "8bb1440f-4735-579b-a4ab-409b98df4dab"
+LFTSampling = "01beebb5-6b54-40b6-b312-fac6d2d10d07"
+LFTU1 = "c5346ad7-8abe-4d7d-905f-653b6e0abc8c"
 PlotlyBase = "a03496cd-edff-5a9b-9e67-9cda94a718b5"
 PlotlyJS = "f0f68f2c-4968-5e81-91da-67840de0976a"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 TOML = "fa267f1f-6049-4f14-aa54-33bafae1ed76"
 Utils = "9b4f6371-7b53-407c-91a4-11eac51443cc"
-
-[weakdeps]
-LFTSampling = "01beebb5-6b54-40b6-b312-fac6d2d10d07"
-LFTU1 = "c5346ad7-8abe-4d7d-905f-653b6e0abc8c"
-
-[extensions]
-LFTU1Ext = ["LFTSampling", "LFTU1"]
