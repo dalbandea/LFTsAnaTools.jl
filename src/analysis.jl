@@ -26,19 +26,22 @@ mutable struct CorrelatorAnalysis <: AbstractCorrelatorAnalysis
     ydata::Vector{uwreal}
     tmin::Int64
     tmax::Int64
+    Tmax
     histories::CorrelatorFitHistories
     ID::String
     burnout::Int64
+    reweights
 end
 
-function CorrelatorAnalysis(filepath; type = SymmetricCorrelator, ensemble_ID::String = filepath, burnout::Int64 = 1)
-    history, ncfgs, T = read(type, filepath, burnout = burnout)
+function CorrelatorAnalysis(filepath; type = SymmetricCorrelator, ensemble_ID::String = filepath, burnout::Int64 = 1, prefix = "")
+    history, ncfgs, T = read(type, filepath, burnout = burnout, prefix = prefix)
     x = []
     ydata = uwreal[]
     tmin = 1
     tmax = T
+    Tmax = 0
     histories = CorrelatorFitHistories()
-    return CorrelatorAnalysis(filepath, type, history, T, x, ydata, tmin, tmax, histories, ensemble_ID, burnout)
+    return CorrelatorAnalysis(filepath, type, history, T, x, ydata, tmin, tmax, Tmax, histories, ensemble_ID*"burn$burnout", burnout, nothing)
 end
 
 function reset_histories!(corrws::AbstractCorrelatorAnalysis)
@@ -92,7 +95,12 @@ sign(::Type{AntisymmetricCorrelator}) = -one(eltype(Float64))
 
 correlator_fit_function(corrws::AbstractCorrelatorAnalysis) = correlator_fit_function(corrws.type, corrws)
 
-function tmin_fit(corrws::AbstractCorrelatorAnalysis, prms0::Vector{Float64}; Tmax::Int64=length(corrws.ydata)-1, plot_tmin_fit::Bool=false, yscale::Symbol=:identity)
+get_symmetry(::Type{T}) where T = SymmetricCorrelator
+export get_symmetry
+
+function tmin_fit(corrws::AbstractCorrelatorAnalysis, prms0::Vector{Float64}; Tmax::Int64= corrws.Tmax == 0 ? length(corrws.ydata)-1 : corrws.Tmax, plot_tmin_fit::Bool=false, yscale::Symbol=:identity)
+
+    # corrws.tmax < Tmax || error("tmax bigger than Tmax")
 
     ydata = corrws.ydata
     xdata = corrws.xdata
@@ -137,7 +145,7 @@ function tmin_loop(corrws::AbstractCorrelatorAnalysis, prms0::Vector{Float64}; u
 
 	tminvalues = corrws.tmin:corrws.tmax
 
-	prms = prms0
+    prms = copy(prms0)
 
     first_tmin = corrws.tmin
 
@@ -158,7 +166,7 @@ function tmin_loop(corrws::AbstractCorrelatorAnalysis, prms0::Vector{Float64}; u
         push!(corrws.histories.tmin, itmin)
 
 		if(update_prms)
-			prms = value.(fitp)
+            prms = copy(value.(fitp))
 		end
 	end
 

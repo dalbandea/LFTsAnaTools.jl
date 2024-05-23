@@ -16,8 +16,8 @@ export f64
 
 
 ADerrors.uwerr(emass::EffectiveMass) = ADerrors.uwerr.(emass.ydata)
-Plots.plot(emass::EffectiveMass; kwargs...) = Plots.plot(emass.xdata, emass.ydata; seriestype=:scatter, label = emass.title, xlabel="t",  kwargs...)
-Plots.plot!(pl::Plots.Plot, emass::EffectiveMass; kwargs...) = Plots.plot!(pl, emass.xdata, emass.ydata; seriestype=:scatter, label = emass.title, kwargs...)
+# Plots.plot(emass::EffectiveMass; kwargs...) = Plots.plot(emass.xdata, emass.ydata; seriestype=:scatter, label = emass.title, xlabel="t",  kwargs...)
+# Plots.plot!(pl::Plots.Plot, emass::EffectiveMass; kwargs...) = Plots.plot!(pl, emass.xdata, emass.ydata; seriestype=:scatter, label = emass.title, kwargs...)
 
 mywrite(io, obs::T) where T <: Real  = write(io, "$(obs)")
 mywrite(io, obs::uwreal)  = write(io, "$(ADerrors.value(obs)),$(ADerrors.err(obs))")
@@ -27,6 +27,16 @@ function mywrite(file, emass::EffectiveMass)
             mywrite(io, emass.xdata[i])
             write(io, ",")
             mywrite(io, emass.ydata[i])
+            write(io, "\n")
+        end
+    end
+end
+function mywrite(file, corrws::CorrelatorAnalysis)
+    open(file, "w") do io
+        for i in eachindex(corrws.ydata)
+            mywrite(io, corrws.xdata[i])
+            write(io, ",")
+            mywrite(io, corrws.ydata[i])
             write(io, "\n")
         end
     end
@@ -63,7 +73,8 @@ export pion_effective_mass
 
 function pion_fit_effective_mass!(ppws::CorrelatorAnalysis)
     try
-        tmin_loop(ppws, [1.0, 1.0])
+        prms = ones(nparameters(correlator_fit_function(ppws)))
+        tmin_loop(ppws, prms)
     catch
     end
     return nothing

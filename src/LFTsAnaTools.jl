@@ -12,6 +12,8 @@ export CorrelatorAnalysis
 
 include("effectivemass.jl")
 
+include("extensions/LFTU1ext.jl")
+
 include("plots.jl")
 
 end # module
