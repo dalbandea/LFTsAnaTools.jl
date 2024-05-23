@@ -2,6 +2,7 @@
 using LFTSampling
 using LFTU1
 import ADerrors: uwreal
+import Base: read
 using DelimitedFiles
 
 
@@ -38,7 +39,7 @@ function Base.read(type::Type{NeutralPion}, dirfilespath; burnout = 0, prefix=""
             )
     for ifl in 1:2
         deltafile = joinpath(dirfilespath, "$(prefix)delta-$ifl.txt")
-        corrs.Delta[1, ifl, :, :] .= readdlm(deltafile, ',')[burnout+1:end, :]
+        # corrs.Delta[1, ifl, :, :] .= readdlm(deltafile, ',')[burnout+1:end, :]
         for jfl in ifl:2
             connfile = joinpath(dirfilespath, "$(prefix)conn-$ifl$jfl.txt")
             discfile = joinpath(dirfilespath, "$(prefix)disc-$ifl$jfl.txt")
@@ -172,14 +173,4 @@ function make_disconnected_pieces(corrws::AbstractCorrelatorAnalysis)
     return uwDD
 end
 
-"""
-Performs reweighting given a markov chain of an observable, `vec` and the
-reweighting weights `W`.
-"""
-function reweight(vec::Vector, W::Vector, ID::String)
-    length(vec) == length(W) || error("Vector and reweighting weights do not have the same length")
-    uwvec = uwreal(vec .* W, ID)
-    uww = uwreal(W, ID)
-    return  uwvec/uww
-end
 
