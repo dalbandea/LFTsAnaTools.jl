@@ -19,8 +19,12 @@ export get_symmetry
 
 abstract type NeutralPion end
 export NeutralPion
+abstract type EtaPrime end
+export EtaPrime
 abstract type ChargedPion <: LFTSampling.AbstractCorrelator end
 export ChargedPion
+abstract type QEtaPrime <: LFTSampling.AbstractCorrelator end
+export QEtaPrime
 
 
 """
@@ -50,6 +54,28 @@ function Base.read(type::Type{NeutralPion}, dirfilespath; burnout = 0, prefix=""
     return stack([corrs.conn, corrs.disc, corrs.Delta], dims=1), ncfgs - burnout, T
 end
 
+function Base.read(type::Type{EtaPrime}, dirfilespath; burnout = 0, prefix="")
+    ncfgs, T = size(readdlm(joinpath(dirfilespath, "$(prefix)conn-11.txt"),','))
+    corrs = (
+             ID = dirfilespath,
+             conn = zeros(Float64, 2, 2, ncfgs-burnout, T),
+             disc = zeros(Float64, 2, 2, ncfgs-burnout, T),
+             Delta = zeros(Float64, 2, 2, ncfgs-burnout, T)
+            )
+    for ifl in 1:2
+        deltafile = joinpath(dirfilespath, "$(prefix)delta-$ifl.txt")
+        # corrs.Delta[1, ifl, :, :] .= readdlm(deltafile, ',')[burnout+1:end, :]
+        for jfl in ifl:2
+            connfile = joinpath(dirfilespath, "$(prefix)conn-$ifl$jfl.txt")
+            discfile = joinpath(dirfilespath, "$(prefix)disc-$ifl$jfl.txt")
+            corrs.conn[ifl, jfl, :, :] .= readdlm(connfile, ',')[burnout+1:end, :]
+            corrs.disc[ifl, jfl, :, :] .= readdlm(discfile, ',')[burnout+1:end, :]
+        end
+    end
+    return stack([corrs.conn, corrs.disc, corrs.Delta], dims=1), ncfgs - burnout, T
+end
+
+
 """
 Reads history in conn_11.txt
 """
@@ -62,7 +88,15 @@ end
 
 LFTsAnaTools.get_symmetry(::Type{ChargedPion}) = SymmetricCorrelator
 
-correlator_fit_function(::Type{ChargedPion}, corrws::AbstractCorrelatorAnalysis) = SymCorrelator(T=corrws.T, s=1, c=0)
+function Base.read(type::Type{QEtaPrime}, dirfilespath::String; burnout = 0, prefix = "")
+    ncfgs, T = size(readdlm(joinpath(dirfilespath, "eta-prime-qq.txt"),','))
+    connfile = joinpath(dirfilespath, "eta-prime-qq.txt")
+    corr = readdlm(connfile, ',')[burnout+1:end, :]
+    return corr, ncfgs - burnout, T
+end
+
+LFTsAnaTools.get_symmetry(::Type{QEtaPrime}) = SymmetricCorrelator
+
 
 """
 Builds neutral pion into corrws.ydata
@@ -73,6 +107,20 @@ function ADerrors.uwreal(corrws::AbstractCorrelatorAnalysis, type::Type{NeutralP
         uwhist[is, ifl, jfl, t] = uwreal(corrws.history[is, ifl, jfl, :, t], corrws.ID)
     end
     ypi0 = (uwhist[1,1,1,:] + uwhist[1,2,2,:]) - (uwhist[2,1,1,:] + uwhist[2,2,2,:]) + 2*uwhist[2,1,2,:]
+    corrws.ydata = ypi0
+    corrws.xdata = 0:corrws.T-1
+    return nothing
+end
+
+"""
+Builds eta prime into corrws.ydata
+"""
+function ADerrors.uwreal(corrws::AbstractCorrelatorAnalysis, type::Type{EtaPrime})
+    uwhist = Array{uwreal}(undef, 2, 2, 2, corrws.T)
+    for is in 1:2, ifl in 1:2, jfl in ifl:2, t in 1:corrws.T
+        uwhist[is, ifl, jfl, t] = uwreal(corrws.history[is, ifl, jfl, :, t], corrws.ID)
+    end
+    ypi0 = (uwhist[1,1,1,:] + uwhist[1,2,2,:]) - (uwhist[2,1,1,:] + uwhist[2,2,2,:]) - 2*uwhist[2,1,2,:]
     corrws.ydata = ypi0
     corrws.xdata = 0:corrws.T-1
     return nothing
@@ -145,14 +193,35 @@ function LFTsAnaTools.uwrealsym(corrws::AbstractCorrelatorAnalysis, type::Type{N
             uwhist[is, ifl, jfl, :] .= uwrealsymrw(corrws.history[is,ifl, jfl, :, :], corrws.reweights, corrws.ID)
         end
     end
-    ypi0 = 1/2*(uwhist[1,1,1,:] + uwhist[1,2,2,:]) - 1/2*(uwhist[2,1,1,:] + uwhist[2,2,2,:]) + uwhist[2,1,2,:]
+    ypi0 = 1/2 * (uwhist[1,1,1,:] .+ uwhist[1,2,2,:]) .- 1/2 * (uwhist[2,1,1,:] .+ uwhist[2,2,2,:]) .+ uwhist[2,1,2,:]
     # uwDD = make_disconnected_pieces(corrws) # this does not seem to affect at all...
     # ypi0 = ypi0 + (1/2*uwrealsym(uwDD[1,1,:]) + 1/2*uwrealsym(uwDD[2,2,:]) - uwrealsym(uwDD[1,2,:]))
     corrws.ydata = ypi0
     return nothing
 end
 
-correlator_fit_function(type::Type{NeutralPion}, corrws) = SymCorrelator(T=corrws.T, s=1, c=0)
+"""
+Builds symmetric neutral pion into corrws.ydata. If corrws.reweights != nothing, it builds the reweighted correlator
+"""
+function LFTsAnaTools.uwrealsym(corrws::AbstractCorrelatorAnalysis, type::Type{EtaPrime})
+	T2p1 = convert(Int64, corrws.T/2+1)
+	corrws.xdata = range(0, length=T2p1)
+    uwhist = Array{uwreal}(undef, 2, 2, 2, T2p1)
+    for is in 1:2, ifl in 1:2, jfl in ifl:2
+        if corrws.reweights == nothing
+            uwhist[is, ifl, jfl, :] .= LFTsAnaTools.uwrealsym(corrws.history[is,ifl, jfl, :, :], corrws.ID)
+        else
+            uwhist[is, ifl, jfl, :] .= uwrealsymrw(corrws.history[is,ifl, jfl, :, :], corrws.reweights, corrws.ID)
+        end
+    end
+    ypi0 = 1/2 * (uwhist[1,1,1,:] .+ uwhist[1,2,2,:]) .- 1/2 * (uwhist[2,1,1,:] .+ uwhist[2,2,2,:]) .- uwhist[2,1,2,:]
+    # uwDD = make_disconnected_pieces(corrws) # this does not seem to affect at all...
+    # ypi0 = ypi0 + (1/2*uwrealsym(uwDD[1,1,:]) + 1/2*uwrealsym(uwDD[2,2,:]) - uwrealsym(uwDD[1,2,:]))
+    corrws.ydata = ypi0
+    return nothing
+end
+
+
 
 """
 Returns disconnected traces expectation values, <tr[γD_ifl]><tr[γD_jfl]>,
