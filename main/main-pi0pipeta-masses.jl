@@ -190,6 +190,15 @@ for i in eachindex(eta.histories.tmin)
     savefig(pl, joinpath(fitpath, "fit-tmin$tmin-log10.pdf"))
 end
 
+# Save masses to BDIO
+
+bdpath = joinpath(anapath, "BDIO-masses")
+mkpath(bdpath)
+
+write(joinpath(bdpath, "mpip.bdio"), mpip)
+write(joinpath(bdpath, "mpi0.bdio"), mpi0)
+write(joinpath(bdpath, "meta.bdio"), meta)
+
 
 # Compute effective masses of the derivative pi0
 
@@ -378,10 +387,6 @@ mywrite(joinpath(meffetapath, "mefffit-qeta.txt"), mqetafit)
 
 bdpath = joinpath(anapath, "BDIO-masses")
 mkpath(bdpath)
-
-write(joinpath(bdpath, "mpip.bdio"), mpip)
-write(joinpath(bdpath, "mpi0.bdio"), mpi0)
-write(joinpath(bdpath, "meta.bdio"), meta)
 
 write(joinpath(bdpath, "mpipfit.bdio"), mpipfit)
 write(joinpath(bdpath, "mpi0fit.bdio"), mpi0fit)
