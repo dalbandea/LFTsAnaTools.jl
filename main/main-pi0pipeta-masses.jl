@@ -346,7 +346,11 @@ end
 
 # Etamass plots
 
-if mdetafit.ydata[3].mean
+if metafit.ydata[3].mean < 0
+    metafit.ydata .= -metafit.ydata
+end
+
+if mdetafit.ydata[3].mean < 0
     mdetafit.ydata .= -mdetafit.ydata
 end
 
