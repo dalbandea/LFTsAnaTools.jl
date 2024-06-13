@@ -161,8 +161,9 @@ fitpath = joinpath(anapath, "fits-pi0")
 mkpath(fitpath)
 
 f = LFTsAnaTools.correlator_fit_function(NeutralPion, pi0)
-for tmin in pi0.histories.tmin
-    prms = pi0.histories.fitp[:,tmin+1]
+for i in eachindex(pi0.histories.tmin)
+    tmin = pi0.histories.tmin[i]
+    prms = pi0.histories.fitp[:,i]
     pl = plot()
     plot!(pl, 0:pi0.Tmax, f, prms)
     plot!(pl, pi0.xdata[1:pi0.Tmax], pi0.ydata[1:pi0.Tmax], yaxis=:log10)
@@ -178,8 +179,9 @@ fitpath = joinpath(anapath, "fits-eta")
 mkpath(fitpath)
 
 f = LFTsAnaTools.correlator_fit_function(EtaPrime, eta)
-for tmin in eta.histories.tmin
-    prms = eta.histories.fitp[:,tmin+1]
+for i in eachindex(eta.histories.tmin)
+    tmin = eta.histories.tmin[i]
+    prms = eta.histories.fitp[:,i]
     pl = plot()
     plot!(pl, 0:eta.Tmax, f, prms)
     plot!(pl, eta.xdata[1:eta.Tmax], eta.ydata[1:eta.Tmax], yaxis=:log10)
@@ -215,8 +217,9 @@ fitpath = joinpath(anapath, "fits-dpi0")
 mkpath(fitpath)
 
 f = LFTsAnaTools.correlator_fit_function(NeutralPion, pi0)
-for tmin in pi0.histories.tmin
-    prms = pi0.histories.fitp[:,tmin+1]
+for i in eachindex(pi0.histories.tmin)
+    tmin = pi0.histories.tmin[i]
+    prms = pi0.histories.fitp[:,i]
     pl = plot()
     plot!(pl, 0:pi0.Tmax, f, prms)
     plot!(pl, pi0.xdata[1:pi0.Tmax], pi0.ydata[1:pi0.Tmax], yaxis=:log10)
@@ -329,8 +332,9 @@ fitpath = joinpath(anapath, "fits-deta")
 mkpath(fitpath)
 
 f = LFTsAnaTools.correlator_fit_function(EtaPrime, eta)
-for tmin in eta.histories.tmin
-    prms = eta.histories.fitp[:,tmin+1]
+for i in eachindex(eta.histories.tmin)
+    tmin = eta.histories.tmin[i]
+    prms = eta.histories.fitp[:,i]
     pl = plot()
     plot!(pl, 0:eta.Tmax, f, prms)
     plot!(pl, eta.xdata[1:eta.Tmax], eta.ydata[1:eta.Tmax], yaxis=:log10)
