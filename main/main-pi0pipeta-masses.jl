@@ -290,16 +290,16 @@ end
 
 deltam, mbar = get_deltam_mbar(pi0)
 
-dMs = [mpip.ydata[i] - mpi0.ydata[i] for i in eachindex(mpi0.ydata)]
+dMs = [mpip.ydata[22] - mpi0.ydata[i] for i in eachindex(mpi0.ydata)]
 deltaMs = EffectiveMass(mpi0.xdata, dMs)
 
-ddMs = [mpip.ydata[i] - mdpi0.ydata[i] for i in eachindex(mdpi0.ydata)]
+ddMs = [mpip.ydata[22] - mdpi0.ydata[i] for i in eachindex(mdpi0.ydata)]
 deltadMs = EffectiveMass(mdpi0.xdata, ddMs)
 
-dMsf = [mpip.ydata[i] - mpi0fit.ydata[i] for i in eachindex(mpi0fit.ydata)]
+dMsf = [mpip.ydata[22] - mpi0fit.ydata[i] for i in eachindex(mpi0fit.ydata)]
 deltaMsf = EffectiveMass(mpi0fit.xdata, dMsf)
 
-ddMsf = [mpip.ydata[i] - mdpi0fit.ydata[i] for i in eachindex(mdpi0fit.ydata)]
+ddMsf = [mpip.ydata[22] - mdpi0fit.ydata[i] for i in eachindex(mdpi0fit.ydata)]
 deltadMsf = EffectiveMass(mdpi0fit.xdata, ddMsf)
 
 pl = plot()
