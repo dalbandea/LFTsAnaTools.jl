@@ -85,7 +85,6 @@ savefig(pl, joinpath(corrpath, basefname*".html"))
 # Compute effective masses
 mpip = pion_effective_mass(pip)
 meta = pion_effective_mass(eta)
-mqeta = pion_effective_mass(qeta)
 
 
 # Fits
@@ -211,7 +210,6 @@ plot!(pl,meta, label="eta cosh")
 plot!(pl,metafit, label="eta fit")
 plot!(pl,mdeta, label="eta cosh der.")
 plot!(pl,mdetafit, label="eta fit der.")
-# plot!(pl,mqetafit, label="qeta fit")
 
 savefig(pl, joinpath(meffetapath, "meffs-eta.pdf"))
 savefig(pl, joinpath(meffetapath, "meffs-eta.html"))
@@ -219,7 +217,6 @@ savefig(pl, joinpath(meffetapath, "meffs-eta.html"))
 mywrite(joinpath(meffetapath, "meff-eta.txt"), meta)
 mywrite(joinpath(meffetapath, "mefffit-eta.txt"), metafit)
 mywrite(joinpath(meffetapath, "meff-deta.txt"), mdeta)
-mywrite(joinpath(meffetapath, "mefffit-qeta.txt"), mqetafit)
 
 
 # Save masses to BDIO
