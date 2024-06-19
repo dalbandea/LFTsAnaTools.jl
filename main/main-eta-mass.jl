@@ -30,7 +30,7 @@ LFTsAnaTools.correlator_fit_function(type::Type{EtaPrime}, corrws) = SymCorrelat
 
 # Extract correlators
 
-pip = CorrelatorAnalysis(wdir, type = ChargedPion, ensemble_ID = wdir), burnout = 0, prefix = "")
+pip = CorrelatorAnalysis(wdir, type = ChargedPion, ensemble_ID = wdir, burnout = 0, prefix = "")
 eta = CorrelatorAnalysis(wdir, type = EtaPrime, ensemble_ID = wdir, burnout = 0, prefix = "")
 
 # Output analysis directory
