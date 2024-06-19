@@ -23,11 +23,6 @@ length(ARGS) == 1 || error("Only one argument is expected! (Path to input direct
 isdir(ARGS[1]) || error("Path provided is not a directory")
 wdir = ARGS[1]
 
-function parse_mass(filepath)
-    masses = replace(filter(!isspace, filepath), r".*\-m(\[.*\]).*" => s"\1")
-    return Meta.eval(Meta.parse(masses))
-end
-
 LFTsAnaTools.correlator_fit_function(::Type{ChargedPion}, corrws::AbstractCorrelatorAnalysis) = SymCorrelator(T=corrws.T, s=1, c=0)
 LFTsAnaTools.correlator_fit_function(type::Type{EtaPrime}, corrws) = SymCorrelator(T=corrws.T, s=1, c=0)
 # LFTsAnaTools.correlator_fit_function(type::Type{QEtaPrime}, corrws) = SymCorrelator(T=corrws.T, s=1, c=0)
@@ -35,7 +30,7 @@ LFTsAnaTools.correlator_fit_function(type::Type{EtaPrime}, corrws) = SymCorrelat
 
 # Extract correlators
 
-pip = CorrelatorAnalysis(wdir, type = ChargedPion, ensemble_ID = string(parse_mass(wdir)), burnout = 0, prefix = "")
+pip = CorrelatorAnalysis(wdir, type = ChargedPion, ensemble_ID = wdir), burnout = 0, prefix = "")
 eta = CorrelatorAnalysis(wdir, type = EtaPrime, ensemble_ID = wdir, burnout = 0, prefix = "")
 
 # Output analysis directory
