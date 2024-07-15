@@ -86,12 +86,12 @@ end
 export pion_effective_mass
 
 function pion_fit_effective_mass!(ppws::CorrelatorAnalysis)
-    try
+    # try
         prms = ones(nparameters(correlator_fit_function(ppws)))
         show(correlator_fit_function(ppws))
         tmin_loop(ppws, prms)
-    catch
-    end
+    # catch
+    # end
     return nothing
 end
 export pion_fit_effective_mass!
@@ -108,6 +108,19 @@ function pion_fit_effective_mass(ppws::CorrelatorAnalysis)
 end
 export pion_fit_effective_mass
 
+function pion_fit_effective_mass_and_constant(ppws::CorrelatorAnalysis)
+    tmin = ppws.tmin
+    tmax = ppws.tmax
+    tmin >= ppws.xdata[1] || error("tmin=$tmin outside of range $(ppws.xdata[1]):$(ppws.xdata[end])")
+    tmax <= ppws.xdata[end] || error("tmax=$tmax outside of range $(ppws.xdata[1]):$(ppws.xdata[end])")
+    pion_fit_effective_mass!(ppws)
+    fit_mpis = ppws.histories.fitp[2,:]
+    fit_const = ppws.histories.fitp[1,:]
+    length(fit_mpis) == length(tmin:tmax) || error("Some fits failed")
+    return EffectiveMass(ppws.xdata[tmin+1:tmax+1], fit_mpis, ppws.ID, title="Mpi-fiteff"), EffectiveMass(ppws.xdata[tmin+1:tmax+1], fit_const)
+end
+export pion_fit_effective_mass_and_constant
+
 
 #####################
 # EffectiveMass I/O #
@@ -116,6 +129,22 @@ export pion_fit_effective_mass
 
 import BDIO: BDIO_write!, BDIO_read, BDIO_open, BDIO_seek!, BDIO_close!
 import Base: read, write
+import ADerrors: read_uwreal
+
+function write(bdfile::String, uwval::uwreal)
+    fb = BDIO.BDIO_open(bdfile, "d", "Test file")
+    BDIO.BDIO_write!(fb, uwval)
+    BDIO_close!(fb)
+end
+
+function ADerrors.read_uwreal(bdfile::String)
+    fb = BDIO.BDIO_open(bdfile, "r")
+    BDIO.BDIO_seek!(fb)
+    uwval = read_uwreal(fb)
+    BDIO_close!(fb)
+    return uwval
+end
+export read_uwreal
 
 BDIO.BDIO_write!(fb::BDIO.BDIOstream, uwval::uwreal) = write_uwreal(uwval, fb, 8)
 function BDIO.BDIO_write!(fb::BDIO.BDIOstream, uwv::Vector{uwreal})
