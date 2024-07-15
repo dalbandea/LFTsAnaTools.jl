@@ -18,6 +18,7 @@ plotlyjs()
 length(ARGS) == 1 || error("Only one argument is expected! (Path to input file)")
 isdir(ARGS[1]) || error("Path provided is not a directory")
 
+wdir = ARGS[1]
 
 # wdir = "/home/david/git/dalbandea/phd/codes/6-LFTs/LFTModels/LFTU1.jl/results/1-Smilga/Nf2sim-b5.0-L24-m0.02_D2024-03-12-15-54-02.07/measurements"
 
