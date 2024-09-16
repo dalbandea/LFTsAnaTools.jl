@@ -168,6 +168,7 @@ end
 # Fit ∂AP
 
 derivate_sym_correlator!(apcorr)
+apcorr.ydata .= -apcorr.ydata
 LFTsAnaTools.correlator_fit_function(::Type{AntisymmetricCorrelator}, corrws::AbstractCorrelatorAnalysis) = SymCorrelator(T=corrws.T, s=1, c=0)
 
 reset_histories!(apcorr)
@@ -185,7 +186,7 @@ for i in eachindex(apcorr.histories.tmin)
     prms = apcorr.histories.fitp[:,i]
     pl = plot()
     plot!(pl, 0:apcorr.Tmax, f, prms)
-    plot!(pl, apcorr.xdata[1:apcorr.Tmax], apcorr.ydata[1:apcorr.Tmax], yaxis=:log10)
+    plot!(pl, apcorr.xdata[2:apcorr.Tmax], apcorr.ydata[1:apcorr.Tmax], yaxis=:log10)
     plot!(pl, title = "tmin = $tmin", xlabel = "t", ylabel = "C(t)")
     savefig(pl, joinpath(fitpath, "fit-tmin$tmin-log10.html"))
     savefig(pl, joinpath(fitpath, "fit-tmin$tmin-log10.pdf"))
