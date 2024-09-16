@@ -201,6 +201,7 @@ write(joinpath(bdpath, "apmeff.bdio"), apmeff)
 write(joinpath(bdpath, "ppmeff.bdio"), ppmeff)
 write(joinpath(bdpath, "app.bdio"), APP)
 write(joinpath(bdpath, "aap.bdio"), AAP)
+write(joinpath(bdpath, "daap.bdio"), dAAP)
 
 # Plot 
 
@@ -245,7 +246,7 @@ Gpi = sqrt(APP.ydata[15]) * sqrt(2*mpi*sinh(mpi*T/2))
 uwerr(Gpi)
 
 writedlm(joinpath(fpipath, "gpi.txt"), hcat(Gpi.mean, Gpi.err), ',')
-write(joinpath(fpipath, "fpi.bdio"), Gpi)
+write(joinpath(fpipath, "gpi.bdio"), Gpi)
 
 Fpi2 = dAAP.ydata[15]/sqrt(APP.ydata[15]) * sqrt(sinh(mpi*T/2))/mpi^(3/2)
 uwerr(Fpi2)
