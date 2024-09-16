@@ -150,6 +150,9 @@ for i in eachindex(ppcorr.histories.tmin)
     savefig(pl, joinpath(fitpath, "fit-tmin$tmin-log10.pdf"))
 end
 
+fitpath = joinpath(anapath, "fits-AP")
+mkpath(fitpath)
+
 f = LFTsAnaTools.correlator_fit_function(AntisymmetricCorrelator, apcorr)
 for i in eachindex(apcorr.histories.tmin)
     tmin = apcorr.histories.tmin[i]
@@ -162,6 +165,31 @@ for i in eachindex(apcorr.histories.tmin)
     savefig(pl, joinpath(fitpath, "fit-tmin$tmin-log10.pdf"))
 end
 
+# Fit ∂AP
+
+derivate_sym_correlator!(apcorr)
+LFTsAnaTools.correlator_fit_function(::Type{AntisymmetricCorrelator}, corrws::AbstractCorrelatorAnalysis) = SymCorrelator(T=corrws.T, s=1, c=0)
+
+reset_histories!(apcorr)
+apcorr.tmin = 2
+apcorr.tmax = 23
+apcorr.Tmax = 25
+dapmeff, dAAP = pion_fit_effective_mass_and_constant(apcorr)
+
+fitpath = joinpath(anapath, "fits-dAP")
+mkpath(fitpath)
+
+f = LFTsAnaTools.correlator_fit_function(AntisymmetricCorrelator, apcorr)
+for i in eachindex(apcorr.histories.tmin)
+    tmin = apcorr.histories.tmin[i]
+    prms = apcorr.histories.fitp[:,i]
+    pl = plot()
+    plot!(pl, 0:apcorr.Tmax, f, prms)
+    plot!(pl, apcorr.xdata[1:apcorr.Tmax], apcorr.ydata[1:apcorr.Tmax], yaxis=:log10)
+    plot!(pl, title = "tmin = $tmin", xlabel = "t", ylabel = "C(t)")
+    savefig(pl, joinpath(fitpath, "fit-tmin$tmin-log10.html"))
+    savefig(pl, joinpath(fitpath, "fit-tmin$tmin-log10.pdf"))
+end
 
 # Save to BDIO
 
@@ -203,7 +231,6 @@ savefig(pl, joinpath(meffpath, "app.html"))
 fpipath = joinpath(anapath, "fpi")
 mkpath(fpipath)
 
-
 mpi = ppmeff.ydata[15]
 T = ppcorr.T
 
@@ -211,8 +238,19 @@ Fpi = AAP.ydata[15]/sqrt(APP.ydata[15]) * sqrt(1/mpi*sinh(mpi*T/2))
 uwerr(Fpi)
 
 writedlm(joinpath(fpipath, "fpi.txt"), hcat(Fpi.mean, Fpi.err), ',')
-
 write(joinpath(fpipath, "fpi.bdio"), Fpi)
+
+Gpi = sqrt(APP.ydata[15]) * sqrt(2*mpi*sinh(mpi*T/2))
+uwerr(Gpi)
+
+writedlm(joinpath(fpipath, "gpi.txt"), hcat(Gpi.mean, Gpi.err), ',')
+write(joinpath(fpipath, "fpi.bdio"), Gpi)
+
+Fpi2 = dAAP.ydata[15]/sqrt(APP.ydata[15]) * sqrt(sinh(mpi*T/2))/mpi^(3/2)
+uwerr(Fpi2)
+
+writedlm(joinpath(fpipath, "fpi2.txt"), hcat(Fpi2.mean, Fpi2.err), ',')
+write(joinpath(fpipath, "fpi2.bdio"), Fpi2)
 
 
 # I think that if I overkill with statistics I don't need more sophisticated
